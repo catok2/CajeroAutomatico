@@ -4,93 +4,148 @@
     {
         static void Main(string[] args)
         {
-            string lidentificador="";
-            string lpassword="";
-            string newPass="";
+            bool valido = false;
+            String finalizar = "N";
+            string lUseridentificador = "";
+            string lpassword = "";
+            string newPass = "";
             int opcion = 0;
-            int saldo = 0;
+            int saldo = 1;
+            int intentos = 0;
             int cantidadAdepositar = 0;
             int cantidadARetirar = 0;
             string cbuTransferencia = "";
-            int montoATransferir =0;
+            int montoATransferir = 0;
+            string[] opciones = { "1.- Verifica Saldo", "2.- Deposito", "3.- Retiro", "4.- Transferencia", "5.- Cambio de Clave", "6.- Salir" };
+
             Console.WriteLine("***** BIENVENIDO A SANTANDER INGRESE SU USUARIO Y CONTRASEÑA *****");
             do
             {
-                Console.WriteLine("Ingrese el usuario de su identificador");
-                lidentificador = Console.ReadLine();
-                Console.WriteLine("Ingrese el Password");  
-                lpassword = Console.ReadLine();
-
-            } while (f_validacion(lidentificador, lpassword)); // AGREGAR VALIDACION 3 VECES NOS DIGA GRACIAS .
-
-            // APARTIR DE ACA INGRESA AL MENU
-            Console.WriteLine("***** SELECCIONE UNA OPCION *****");
-            Console.WriteLine("1. Verificar Saldo.");
-            Console.WriteLine("2. Deposito.");
-            Console.WriteLine("3. Retiro.");
-            Console.WriteLine("4. Transferencia.");
-            Console.WriteLine("5. Cambio de Clave.");
-            Console.WriteLine("6. Salir.");
-            opcion = int.Parse(Console.ReadLine());
-     
-              //AGREGAR VALIDACION DE TIPO ENTERO Y QUE SEA DEL 1 A 4 (OPCIONES)
-          switch (opcion)
-            {   
-                case 1:                    
-                    Console.WriteLine("Su saldo es: " + getverificarSaldo(saldo));
+                intentos++;
+                // validacion de 3 intentos maximo que puedes equivocarte. .
+                if (intentos <= 3)
+                {
+                    Console.WriteLine("Ingrese el usuario de su identificador");
+                    lUseridentificador = Console.ReadLine();
+                    Console.WriteLine("Ingrese el Password");
+                    lpassword = Console.ReadLine();
+                }
+                else
+                {
+                    Console.WriteLine("Demasiados intentos fallidos, Comuniquese con un administrador");
+                   
                     break;
-                case 2:
-                    Console.WriteLine("Ingrese la cantidad que desea depositar en su cuenta");
-                    cantidadAdepositar = int.Parse(Console.ReadLine());
-                    saldo = setDeposito(saldo, cantidadAdepositar);
-                    Console.WriteLine("Su saldo es: " + getverificarSaldo(saldo));
-                    break;
-                case 3:
-                    Console.WriteLine("Ingrese la cantidad que desea retirar de su cuenta");
-                    cantidadARetirar = int.Parse(Console.ReadLine());
-                    if (validarSaldo(saldo, cantidadARetirar)) { 
-                    saldo = retiroSaldo(saldo, cantidadARetirar);
+                }
+            } while (!f_validacion(lUseridentificador, lpassword)); //funcion que valida el password.
+            if ((intentos <= 3))
+            {
+                do
+                {
+                    Console.Clear();
+                    Console.WriteLine("\n***** SELECCIONE UNA OPCION *****");
+                foreach (string i in opciones) //RECORRE EL ARRAY Y MUESTRA LAS OPCIONES POR PANTALLA
+                    {
+                    Console.WriteLine($"{i}"); 
+                }
+                opcion = int.Parse(Console.ReadLine());
+                    //AGREGAR VALIDACION DE TIPO ENTERO Y QUE SEA EL LARGO DEL ARRAY
+                    if (opcion is int && opcion <= opciones.Length)
+                    {
+                        switch (opcion) // VALIDA CADA CASE POR CADA TIPO DE MOVIMIENTO.
+                        {
+                            case 1:
+                                Console.WriteLine("Su saldo es: " + getverificarSaldo(saldo));
+                                break;
+                            case 2:
+                                Console.WriteLine("Ingrese la cantidad que desea depositar en su cuenta");
+                                cantidadAdepositar = int.Parse(Console.ReadLine());
+                                saldo = setDeposito(saldo, cantidadAdepositar);
+                                Console.WriteLine("Su saldo es: " + getverificarSaldo(saldo));
+                                break;
+                            case 3:
+                                do
+                                {
+                                    Console.WriteLine("Ingrese la cantidad que desea retirar de su cuenta");
+                                    cantidadARetirar = int.Parse(Console.ReadLine());
+                                    {
+                                        if (validarSaldo(saldo, cantidadARetirar)) //FUNCION VALIDA SI NUESTRO SALDO ES OPTIMO A LA OPERACION
+                                        {
+                                            saldo = retiroSaldo(saldo, cantidadARetirar);
+                                            Console.WriteLine("Su saldo actual es : " + getverificarSaldo(saldo));
+                                            break;
+
+                                        }
+                                        else if (intentos < 3) //VALIDACION DE 3 INTENTOS FALLIDOS.
+                                        {
+                                            intentos++;
+                                            Console.Clear();
+                                            Console.WriteLine("\nSu saldo es insuficiente para la operacion ingrese otro monto");
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("\nDemasiados intentos fallidos seleccione otra opcion");
+                                            break;
+                                        }
+                                    }
+                                } while (valido = true);
+                                break;
+                            case 4:
+                                do
+                                {
+                                    Console.WriteLine("Ingrese el CBU a donde quiera hacer la transferencia");
+                                    cbuTransferencia = Console.ReadLine();
+                                    Console.WriteLine("Ingrese la cantidad que desea transferir");
+                                    montoATransferir = int.Parse(Console.ReadLine());
+
+                                    if (validarSaldo(saldo, montoATransferir))
+                                    {
+                                        saldo = setTransferencia(saldo, montoATransferir);
+                                        Console.WriteLine("Transferencia realizada con exito a la cuenta " + cbuTransferencia);
+                                        Console.WriteLine("Su saldo actual es : " + getverificarSaldo(saldo));
+                                        //valido = false;
+                                        break;
+                                    }
+                                    else if (intentos < 3)
+                                    {
+                                        intentos++;
+                                        Console.Clear();
+                                        Console.WriteLine("\nSu saldo es insuficiente para la operacion ingrese otro monto");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("\nDemasiados intentos fallidos seleccione otra opcion");
+                                        break;
+                                    }
+                                } while (valido = true);
+                                break;
+                            case 5:
+                                Console.WriteLine("Digite la nueva contraseña");
+                                newPass = Console.ReadLine();
+                                lpassword = cambioClave(lpassword, newPass);
+                                Console.WriteLine("Su contraseña ha sido cambiada por " + lpassword);
+                                break;
+                            default:
+                                Console.WriteLine("Ha Salido de las opciones.\n");
+                                break;
+
+                        }
+                            Console.WriteLine("\nDesea Realizar otra movimiento?"); 
+                            finalizar = Console.ReadLine();
                     }
                     else
                     {
-                        Console.WriteLine("Bloqueado...");  
-                    }
-                    Console.WriteLine("Su saldo actual es : " + saldo);
-                    break;
-                case 4:
-                    Console.WriteLine("Ingrese el CBU a donde quiera hacer la transferencia");
-                    cbuTransferencia = Console.ReadLine();
-                    Console.WriteLine("Ingrese la cantidad que desea transferir");
-                    montoATransferir = int.Parse(Console.ReadLine());
-
-                    if (validarSaldo(saldo, montoATransferir))
-                    {
-                       saldo = setTransferencia(saldo, montoATransferir);
-                        Console.WriteLine("Se realizo la transferencia exitosamente su saldo actual es : " + saldo);
-                    }else
-                    {
-                        Console.WriteLine("Operacion Rechazada");
-                    }                   
-                    break;
-                case 5:
-
-                    lpassword = cambioClave(lpassword, newPass);
-                    Console.WriteLine("OPCIONES 5");
-                    break;
-                case 6:
-
-                    Console.WriteLine("CHAU HASTA LUEGO");
-                    break;
-                default:
-                    Console.WriteLine("OPCION ICONRRECTA");
-                    break;
+                        Console.WriteLine("Opcion Incorrecta adios");
+                    }              
+                                         
+                 } while (finalizar == "si"); // SI COLOCAMOS QUE SI AL REALIZAR OTRO MOVIMIENTO NOS VOLVERA APARECER LAS OPCIONES.
+                Console.WriteLine("GRACIAS POR USAR NUESTRO BANCO VUELVA PRONTO");               
+                Console.ReadKey();
             }
-
         }
-        public static Boolean f_validacion(string user, string pass)
+        public static Boolean f_validacion(string user, string pass) // FUNCION QUE VALIDA PASSWORD.
         {
             bool lreturn = false;
-            if (user == "1234" & pass == "1111")
+            if (user == "1111" & pass == "1111")
             {   
                 lreturn = true;
             }
@@ -100,49 +155,40 @@
             }
             return lreturn;
         }
-        public static int getverificarSaldo(int saldo)
+        public static int getverificarSaldo(int saldo) // FUNCION QUE DEVUELVE EL SALDO SE LO COLOCA ASI POR SI EN UN FUTURO QUEREMOS MODIFICAR CAMBIOS YA SEA UN PARSEO A STRING O EN GENERAL.
         {
            return saldo; 
         }
-        public static int setDeposito(int saldo, int cantidadDepositada) 
+        public static int setDeposito(int saldo, int cantidadDepositada)  // HACE LA SUMA DEL SALDO ACTUAL POR EL INGRESADO
         {   
             saldo = saldo + cantidadDepositada;
             return saldo; 
         
         }
-        public static int retiroSaldo(int saldo, int cantidadDeRetiro)
+        public static int retiroSaldo(int saldo, int cantidadDeRetiro)//RESTA SALDO - ACTUAL POR EL INGRESADO
         {
             saldo = saldo - cantidadDeRetiro;
             return saldo;
         }
-        public static int setTransferencia(int saldo, int transferencia)
+        public static int setTransferencia(int saldo, int transferencia) // RESTA SALDO  ACTUAL POR EL INGRESADO, NO SE USO RETIRO SALDO YA QUE HACE OTRA COSA SE PUEDE EXPANDIR.
         {
             saldo = saldo - transferencia;
             return saldo;
         }
-        public static bool validarSaldo(int saldo ,int movimiento)
+        public static bool validarSaldo(int saldo ,int movimiento) // ESTA VALIDA SI NEUSTRO SALDO ES OPTIMO AL MOVIMIENTO EN CASO CASE 3, 4
         {
-            bool cuentaConSaldo = false;
-            while (cuentaConSaldo = false)
-            {                             
+           bool cuentaConSaldo = false;
 
                 if (saldo >= movimiento)
                 {
-
                     cuentaConSaldo = true;
                 }
-                else
-                {
-                    Console.WriteLine("Saldo insuficiente seleccione otro importe");
-                    cuentaConSaldo = false;
-                }
-               
-            }
-            return cuentaConSaldo = false;
+            return  cuentaConSaldo;
         }
-        public static string cambioClave(String clave, String nuevaClave)
+        public static string cambioClave(String clave, String nuevaClave) // CAMBIA LA CLAVE VIEJA POR LA INGRESADA.
         {
            return clave = nuevaClave;
         }
+      
     }
 }
